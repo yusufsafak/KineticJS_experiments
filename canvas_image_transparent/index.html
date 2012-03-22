@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="kinetic-v3.8.5.js">
+    </script>
+    <script>
+        Kinetic.GlobalObject.ImagesData={};
+        Kinetic.NewImage = function(config){
+            this.image = config.image;
+            
+            // defaults
+            this.width = config.width !== undefined ? config.width : config.image.width;
+            this.height = config.height !== undefined ? config.height : config.image.height;
+            
+            config.drawFunc = function(){
+                var canvas = this.getCanvas();
+                var context = this.getContext();
+                context.drawImage(this.image, 0, 0, this.width, this.height);
+                if(!Kinetic.GlobalObject.ImagesData[this.name]){
+                    
+                    //console.log("aaa");
+                    var ctx=this.image.getContext('2d')
+                    var imgd = ctx.getImageData(0, 0, this.width, this.height);
+                    var pix = imgd.data;
+                    Kinetic.GlobalObject.ImagesData[this.name]=new Array();
+                    for (var i = 0, n = pix.length; i < n; i += 4) {
+                        var row = Math.floor((i / 4) / width);
+                        if(!Kinetic.GlobalObject.ImagesData[this.name][row])
+                            Kinetic.GlobalObject.ImagesData[this.name][row]=new Array();
+                        //OPTIMIZE: tilda kullan
+                        //var row=~~((i/4)/width);
+                        var column = (i / 4) - (row * width);
+                        //if (!imgparr[row]) imgparr[row] = [];
+                        Kinetic.GlobalObject.ImagesData[this.name][row][column]=pix[i + 3] == 0 ? 0 : 1;
+                        
+                    }
+                    console.log(Kinetic.GlobalObject.ImagesData[this.name],Kinetic.GlobalObject.ImagesData[this.name].length);
+                }
+                
+                
+            };
+            
+            // call super constructor
+            Kinetic.Shape.apply(this, [config]);
+        };
+        
+        //Kinetic.NewImage.prototype=Kinetic.Image.prototype;
+        // extend Geometry
+        Kinetic.GlobalObject.extend(Kinetic.NewImage, Kinetic.Shape);
+        
+        Kinetic.NewImage.prototype.isPointInShape=function(backstageLayer,pos){
+            var column=pos.x - this.x-1;
+            var row=pos.y - this.y-1;
+            //console.log(Kinetic.GlobalObject.ImagesData[s.name].length)
+            if(row >= 0 && column >=0 && this.width >column && this.height > row){
+                try{
+                    var i=Kinetic.GlobalObject.ImagesData[this.name][row][column];
+                }
+                catch(err){
+                    console.log(column,row);
+                }
+                return i;
+            }  
+            else return false;
+        }
+        
+        window.onload = function(){
+            var stage = new Kinetic.Stage("container", 578, 400);
+            var layer = new Kinetic.Layer();
+            var imageObj=new Image();
+            imageObj.src="house.png";
+            width=256;height=211;
+            
+            
+            imageObj.onload=function(){
+            
+              var offscreenCanvas = document.createElement('canvas');
+			  var offscreenCtx = offscreenCanvas.getContext('2d');
+			  offscreenCanvas.width = width;
+			  offscreenCanvas.height = height;
+			  offscreenCtx.drawImage(this,0,0, width, height);
+                
+            
+                var img = new Kinetic.NewImage({
+                        x: 10,
+                        y: 20,
+                        image: offscreenCanvas,
+                        width: 256,
+                        height: 211,
+                        name: "image",
+                        draggable:true
+                    });
+                    /*var img3 = new Kinetic.NewImage({
+                        x: 30,
+                        y: 40,
+                        image: offscreenCanvas,
+                        width: 256,
+                        height: 211,
+                        name: "image",
+                        draggable:true
+                    });*/
+                var circle = new Kinetic.Circle({
+                    x: 300,
+                    y: stage.height / 2,
+                    fill: "red",
+                    stroke: "black",
+                    strokeWidth: 4,
+                    radius: 70,draggable:true
+                });
+                layer.add(img); 
+                layer.add(circle); 
+                stage.add(layer);
+                console.log(Kinetic.GlobalObject.ImagesData);
+                	img.on("mousedown", function(){
+                        console.log("sss");
+                        img.moveToTop();
+                        layer.draw();
+                    });
+                    img.on("mousemove", function(){
+                        
+                        img.alpha=0.8;
+                        layer.draw();
+                    });
+                    img.on("mouseout", function(){
+                        
+                        img.alpha=1;
+                        layer.draw();
+                    });
+                    img.on("click", function(){
+                        console.log("sss");
+                        //img.moveToTop();
+                        //layer.draw();
+                    });
+            }
+       };
+    </script>
+</head>
+<body onmousedown="return false;">
+    <div id="container">
+    </div>
+</body>
+</html>
