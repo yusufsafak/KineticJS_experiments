@@ -18,7 +18,7 @@
                 context.drawImage(this.image, 0, 0, this.width, this.height);
                 if(!Kinetic.GlobalObject.ImagesData[this.name]){
                 	Kinetic.GlobalObject.ImagesData[this.name]=new Array();
-                	var ctx=this.image.getContext('2d')
+                	var ctx=this.image.getContext('2d');
                     var imgd = ctx.getImageData(0, 0, this.width, this.height);
                     var pix = imgd.data;
                     for (var i = 0, n = pix.length; i < n; i += 4) {
@@ -51,7 +51,7 @@
             var row=pos.y - this.y;
             if(row >= 0 && column >=0 && this.width >column && this.height > row){
             	var i=Kinetic.GlobalObject.ImagesData[this.name][row][column];
-           	return i;
+           	    return i;
             }  
             else return false;
         }
@@ -61,48 +61,46 @@
             var layer = new Kinetic.Layer();
             var imageObj=new Image();
             imageObj.src="house.png";
-            
-            
             imageObj.onload=function(){
             	//http://io-2011-html5-games-hr.appspot.com/#46
             	//http://www.html5rocks.com/en/tutorials/canvas/performance/
             	var offscreenCanvas = document.createElement('canvas');
-	 	var offscreenCtx = offscreenCanvas.getContext('2d');
-	  	offscreenCanvas.width = this.width;
-	  	offscreenCanvas.height = this.height;
-	  	offscreenCtx.drawImage(this,0,0, this.width, this.height);
+	         	var offscreenCtx = offscreenCanvas.getContext('2d');
+	          	offscreenCanvas.width = this.width;
+	          	offscreenCanvas.height = this.height;
+	          	offscreenCtx.drawImage(this,0,0, this.width, this.height);
                 
-            for (var i = 0; i < 100; i++) {
-                var img = new Kinetic.NewImage({
-                        x: parseInt(10*i* Math.random()),
-                        y: parseInt(20*i* Math.random()),
-                        image: offscreenCanvas,
-                        width: this.width,
-                        height: this.height,
-                        name: "image"+i,
-                        draggable:true
-                    });
-                
-                layer.add(img); 
-                
-                	img.on("mousedown", function(){
-                        console.log("sss");
-                        this.moveToTop();
-                        layer.draw();
-                    });
-                    img.on("mousemove", function(){
-                        
-                        this.alpha=0.8;
-                        layer.draw();
-                    });
-                    img.on("mouseout", function(){
-                        
-                        this.alpha=1;
-                        layer.draw();
-                    });
+                for (var i = 0; i < 100; i++) {
+                    var img = new Kinetic.NewImage({
+                            x: parseInt(10*i* Math.random()),
+                            y: parseInt(20*i* Math.random()),
+                            image: offscreenCanvas,
+                            width: this.width,
+                            height: this.height,
+                            name: "image"+i,
+                            draggable:true
+                        });
                     
-               }
-               stage.add(layer);
+                    layer.add(img); 
+                    
+                    	img.on("mousedown", function(){
+                            console.log("sss");
+                            this.moveToTop();
+                            layer.draw();
+                        });
+                        img.on("mousemove", function(){
+                            
+                            this.alpha=0.8;
+                            layer.draw();
+                        });
+                        img.on("mouseout", function(){
+                            
+                            this.alpha=1;
+                            layer.draw();
+                        });
+                        
+                 }
+                 stage.add(layer);
                
             }
        };

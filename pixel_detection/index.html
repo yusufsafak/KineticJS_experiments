@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="kinetic-core.js">
+    </script>
+    <script>
+        
+        
+        window.onload = function(){
+            var stage = new Kinetic.Stage({
+                container: "container",
+                width: 1000,
+                height: 1000
+            });
+            
+            /*var t=new Kinetic.Transform();
+            t.translate(10,10);
+            console.log(t.getMatrix())
+            var a=new Kinetic.Transform();
+            a.multiply(t);
+            console.log(a.getMatrix())*/
+            var layer = new Kinetic.Layer({
+                rotationDeg: 20
+            });
+            var imageObj=new Image();
+            imageObj.src="house.png";
+            imageObj.onload=function(){
+            	
+                var imgArr=[];
+                for (var i = 0; i < 100; i++) {
+                    imgArr[i] = new Kinetic.Image({
+                            x: parseInt(10*i* Math.random()+10),
+                            y: parseInt(20*i* Math.random()+20),
+                            image: this,
+                            width: this.width,
+                            height: this.height,
+                            name: "image"+i,
+                            draggable:true,
+                            rotationDeg:-45,
+                            detectionType: "pixel"
+                        });
+                    
+                    layer.add(imgArr[i]); 
+                    
+                    	imgArr[i].on("mousedown", function(){
+                            console.log("sss");
+                            this.moveToTop();
+                            layer.draw();
+                        });
+                        imgArr[i].on("mousemove", function(){
+                            
+                            this.alpha=0.8;
+                            layer.draw();
+                        });
+                        imgArr[i].on("mouseout", function(){
+                            
+                            this.alpha=1;
+                            layer.draw();
+                        });
+                        
+                 }
+                 stage.add(layer);
+                /*
+                 * since we are using pixel detection, we need to save
+                 * the animal data
+                 */
+                for(var n = 0; n < imgArr.length; n++) {
+                    imgArr[n].save();
+                }
+            }
+       };
+    </script>
+</head>
+<body onmousedown="return false;">
+    <div id="container">
+    </div>
+</body>
+</html>
